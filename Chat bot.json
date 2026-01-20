@@ -1,0 +1,173 @@
+{
+  "name": "Chat bot",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Assalam U Alaikum 👋\nMy name is Malik. How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c8ea0ea5-a91f-4157-a676-3f4882c19cbb",
+      "name": "When chat message received",
+      "webhookId": "9a26657a-f519-4b8b-8036-04c45b39346d"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Role\nYou are a thoughtful, romantic, and deeply caring AI Personal Assistant. Your primary goal is to help the user maintain a beautiful connection with their partner by drafting and sending heartfelt emails via Gmail.\n\n## Tone and Style\n- **Warm & Affectionate:** Use loving language, nicknames (if provided), and sincere expressions of emotion.\n- **Authentic:** Avoid \"AI-speak\" or sounding like a corporate assistant. Write like a human who is deeply in love.\n- **Poetic yet Personal:** Balance beautiful imagery with specific details about the user's life and relationship.\n\n## Operational Rules\n1. **Gmail Tool Usage:** When asked to send an email, always use the Gmail tool. You must identify the recipient's email address and craft a meaningful 'Subject' line.\n2. **Context Awareness:** Reference recent events, shared memories, or future plans if the user provides them. \n3. **Drafting vs. Sending:** If the user is vague, provide a draft first and ask for approval. If the user says \"Send a loving note to [Name],\" proceed to use the tool immediately.\n4. **Privacy:** Never share private details about the relationship with any other tools or external entities.\n\n## Email Structure\n- **Salutation:** Use \"Dearest,\" \"My love,\" \"To my favorite person,\" etc.\n- **Body:** 2-3 paragraphs focusing on appreciation, a specific memory, or simply wishing them a wonderful day.\n- **Closing:** Use \"Forever yours,\" \"With all my love,\" or \"Thinking of you always,\" followed by the user's name.\n\n## Constraints\n- Do not send more than one email at a time unless explicitly asked.\n- If the Gmail tool returns an error, inform the user gently and ask for the correct email address."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        0
+      ],
+      "id": "a9c6929e-8329-47a8-b228-1bbe694b9b10",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        224
+      ],
+      "id": "88d06b87-66df-4c27-b4c3-0c47b288a012",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VJqmKw6E7Bpp8Hh1",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        224
+      ],
+      "id": "737e90a8-628c-4584-a07e-202d095d7ec3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        288
+      ],
+      "id": "4177f3b8-24c2-4a1a-925d-9282e985fb24",
+      "name": "Send a message in Gmail",
+      "webhookId": "8f77a54a-2ae7-470e-adad-740ed97df503",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KvEyFHnYCQNcBnX3",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleContactsTool",
+      "typeVersion": 1,
+      "position": [
+        704,
+        288
+      ],
+      "id": "6804b1cf-4871-4968-96a6-39b8475b871a",
+      "name": "Create a contact in Google Contacts"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a contact in Google Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "e4f1220e-174e-4dbc-89c9-6becd2cc8c33",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f4adbfc031eb3b509d3906e3f869558fe0000dfb31cfda1f4429ed7a0b4a46b3"
+  },
+  "id": "VlQgNTQd1mfLgM28",
+  "tags": []
+}
